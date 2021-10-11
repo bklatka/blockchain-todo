@@ -20,7 +20,7 @@ const App = {
         window.web3 = new Web3(App.web3Provider);
     },
     loadAccount: async () => {
-        App.account = web3.eth.accounts[0]
+        App.account = await web3.eth.requestAccounts().then(accounts => accounts[0])
         console.log(App.account)
     },
     loadContract: async () => {
@@ -29,8 +29,6 @@ const App = {
         App.contracts.TodoList.setProvider(App.web3Provider)
 
         App.todoList = await App.contracts.TodoList.deployed();
-
-
 
     },
     setLoading: (boolean) => {
@@ -85,6 +83,15 @@ const App = {
         App.setLoading(true)
         $('#account').html(App.todoList.address)
         App.setLoading(false)
+    },
+    createTask: async () => {
+        App.setLoading(true);
+        const content = $('#newTask').val();
+
+        await App.todoList.createTask(content, {
+            from: App.account,
+        });
+        window.location.reload();
     }
 
 
